@@ -57,3 +57,9 @@ This section will be appended before each `Error #` commit with:
 - Failing test: `test_give_loan_reduces_bank_reserves`
 - Root cause: `Bank.give_loan` credits player but does not deduct bank reserves.
 - Change to apply: Subtract loan amount from bank funds when loan is issued.
+
+## Error 3 Planned Fix
+
+- Failing test: `test_player_move_passing_go_grants_salary`
+- Root cause: `Player.move` awards salary only when landing exactly on Go, not when passing Go.
+- Change to apply: Detect wrap-around and award Go salary for any pass-over movement.
