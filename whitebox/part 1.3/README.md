@@ -30,6 +30,26 @@ Each test is derived from branch/state analysis of the source code.
 - Why needed: Buyer-to-seller cash transfer is required for a valid sale.
 - Risk covered: Seller not credited and money disappearing from the system.
 
+6. `test_dice_roll_values_are_between_1_and_6`
+- Path covered: `Dice.roll` random assignment branch.
+- Why needed: Dice must stay in legal Monopoly-style range.
+- Risk covered: Invalid movement and unstable turn behavior from out-of-range values.
+
+7. `test_find_winner_returns_highest_net_worth_player`
+- Path covered: `Game.find_winner` winner selection logic.
+- Why needed: End-game winner must be highest net worth, not lowest.
+- Risk covered: Incorrect game result declaration.
+
+8. `test_buy_property_allows_exact_balance`
+- Path covered: `Game.buy_property` affordability boundary condition.
+- Why needed: Exact-balance purchases should be legal.
+- Risk covered: False-negative rejection on valid purchase.
+
+9. `test_pay_rent_transfers_to_owner`
+- Path covered: `Game.pay_rent` money transfer branch.
+- Why needed: Rent must move from renter to owner.
+- Risk covered: Money sink where cash is deducted but not credited.
+
 ## Run Command
 
 From repository root:

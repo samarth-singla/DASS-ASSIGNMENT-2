@@ -13,6 +13,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from moneypoly.bank import Bank
 from moneypoly.cards import CardDeck
 from moneypoly.config import GO_SALARY, JAIL_FINE
+from moneypoly.dice import Dice
 from moneypoly.game import Game
 from moneypoly.player import Player
 from moneypoly.property import Property, PropertyGroup
@@ -126,6 +127,51 @@ class TestWhiteBoxCases(unittest.TestCase):
         self.assertFalse(success)
         self.assertEqual(prop.owner, owner)
         self.assertEqual(buyer.balance, buyer_start_balance)
+
+    def test_dice_roll_values_are_between_1_and_6(self):
+        """Every die face should always stay within the standard range 1..6."""
+        dice = Dice()
+        for _ in range(200):
+            dice.roll()
+            self.assertTrue(1 <= dice.die1 <= 6)
+            self.assertTrue(1 <= dice.die2 <= 6)
+
+    def test_find_winner_returns_highest_net_worth_player(self):
+        """Winner selection should pick the maximum net-worth player."""
+        game = Game(["A", "B"])
+        game.players[0].balance = 100
+        game.players[1].balance = 300
+        winner = game.find_winner()
+        self.assertEqual(winner, game.players[1])
+
+    def test_buy_property_allows_exact_balance(self):
+        """A player with exactly the property price should be able to buy it."""
+        game = Game(["A", "B"])
+        buyer = game.players[0]
+        prop = game.board.properties[1]
+        buyer.balance = prop.price
+
+        success = game.buy_property(buyer, prop)
+
+        self.assertTrue(success)
+        self.assertEqual(prop.owner, buyer)
+        self.assertEqual(buyer.balance, 0)
+
+    def test_pay_rent_transfers_to_owner(self):
+        """Rent payment should reduce renter cash and increase owner cash."""
+        game = Game(["A", "B"])
+        owner, renter = game.players[0], game.players[1]
+        prop = game.board.properties[2]
+        prop.owner = owner
+        owner.add_property(prop)
+        owner_start = owner.balance
+        renter_start = renter.balance
+        rent = prop.get_rent()
+
+        game.pay_rent(renter, prop)
+
+        self.assertEqual(renter.balance, renter_start - rent)
+        self.assertEqual(owner.balance, owner_start + rent)
 
 
 if __name__ == "__main__":
