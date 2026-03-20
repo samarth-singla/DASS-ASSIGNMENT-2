@@ -58,6 +58,25 @@ Run all integration tests together:
 Set-Location "C:\Users\Lenovo\Desktop\DASS Assignment 2\DASS-ASSIGNMENT-2"
 python -m unittest discover -s integration/tests -p "test_*.py" -v
 
+Run Part 2.2 integration tests (cross-module scenarios) from integrationn tests folder:
+
+Set-Location "C:\Users\Lenovo\Desktop\DASS Assignment 2\DASS-ASSIGNMENT-2"
+python -m unittest discover -s "integration/integrationn tests" -p "test_*.py" -v
+
+Run all integration tests from both folders:
+
+Set-Location "C:\Users\Lenovo\Desktop\DASS Assignment 2\DASS-ASSIGNMENT-2"
+python -m unittest discover -s integration/tests -p "test_*.py" -v
+python -m unittest discover -s "integration/integrationn tests" -p "test_*.py" -v
+
+Run coverage for integration code (target 100%):
+
+Set-Location "C:\Users\Lenovo\Desktop\DASS Assignment 2\DASS-ASSIGNMENT-2"
+python -m coverage erase
+python -m coverage run -m unittest discover -s integration/tests -p "test_*.py"
+python -m coverage run --append -m unittest discover -s "integration/integrationn tests" -p "test_*.py"
+python -m coverage report -m integration/code/*.py
+
 ### Optional: Use the project virtual environment interpreter explicitly
 
 If python is not mapped to your active environment, replace python with:
