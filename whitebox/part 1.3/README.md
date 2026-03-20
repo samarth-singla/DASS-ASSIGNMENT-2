@@ -63,3 +63,9 @@ This section will be appended before each `Error #` commit with:
 - Failing test: `test_player_move_passing_go_grants_salary`
 - Root cause: `Player.move` awards salary only when landing exactly on Go, not when passing Go.
 - Change to apply: Detect wrap-around and award Go salary for any pass-over movement.
+
+## Error 4 Planned Fix
+
+- Failing test: `test_jail_voluntary_fine_deducts_player_balance`
+- Root cause: Voluntary jail-fine branch collects bank money but does not deduct the player's balance.
+- Change to apply: Deduct `JAIL_FINE` from player before releasing from jail.
