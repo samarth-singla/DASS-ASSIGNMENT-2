@@ -18,3 +18,9 @@ Baseline pylint score: 9.08/10
 - Removed unused BOARD_SIZE import in dice module.
 - Initialized doubles_streak inside constructor.
 - Pylint score: 9.14/10 -> 9.17/10.
+
+### Iteration 3: Game module style cleanup
+- Removed unused imports in game module.
+- Fixed superfluous f-string usage and no-else-break style issue.
+- Simplified range checks and added missing final newline.
+- Pylint score: 9.17/10 -> 9.28/10.
