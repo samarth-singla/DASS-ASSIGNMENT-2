@@ -29,3 +29,8 @@ Baseline pylint score: 9.08/10
 - Replaced singleton comparison in board purchasable check.
 - Simplified unmortgage return flow in property module.
 - Pylint score: 9.28/10 -> 9.31/10.
+
+### Iteration 5: Entrypoint and bank documentation
+- Added module/function docstrings in main.py.
+- Added module/class docstrings in bank.py.
+- Pylint score: 9.31/10 -> 9.39/10.
