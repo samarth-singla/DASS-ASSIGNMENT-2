@@ -91,6 +91,12 @@ class TestWhiteBoxCases(unittest.TestCase):
         deck = CardDeck([])
         self.assertEqual(deck.cards_remaining(), 0)
 
+    def test_empty_deck_repr_does_not_crash(self):
+        """Representing an empty deck should not raise exceptions."""
+        deck = CardDeck([])
+        repr_text = repr(deck)
+        self.assertIn("CardDeck(0 cards", repr_text)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -168,4 +168,5 @@ class CardDeck:
         return len(self.cards)
 
     def __repr__(self):
-        return f"CardDeck({len(self.cards)} cards, next={self.index % len(self.cards)})"
+        next_index = 0 if not self.cards else self.index % len(self.cards)
+        return f"CardDeck({len(self.cards)} cards, next={next_index})"

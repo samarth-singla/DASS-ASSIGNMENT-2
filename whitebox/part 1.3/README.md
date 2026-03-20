@@ -81,3 +81,9 @@ This section will be appended before each `Error #` commit with:
 - Failing test: `test_empty_deck_cards_remaining_is_zero`
 - Root cause: `CardDeck.cards_remaining` performs modulo with `len(self.cards)` and crashes when deck is empty.
 - Change to apply: Return `0` immediately for empty decks.
+
+## Error 7 Planned Fix
+
+- Failing test: `test_empty_deck_repr_does_not_crash`
+- Root cause: `CardDeck.__repr__` performs modulo with `len(self.cards)` and crashes when deck is empty.
+- Change to apply: Use a safe `next_index` value (`0`) for empty decks.
