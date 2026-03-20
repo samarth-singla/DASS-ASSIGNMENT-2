@@ -45,3 +45,9 @@ This section will be appended before each `Error #` commit with:
 - root cause
 - code change summary
 - commit hash
+
+## Error 1 Planned Fix
+
+- Failing test: `test_bank_collect_negative_is_ignored`
+- Root cause: `Bank.collect` adds negative values directly, reducing bank reserves.
+- Change to apply: Return early for negative amounts so they are ignored.
