@@ -1,3 +1,5 @@
+"""Chance and Community Chest card data plus deck behavior."""
+
 import random
 
 CHANCE_CARDS = [

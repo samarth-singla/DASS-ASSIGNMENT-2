@@ -30,3 +30,9 @@ Baseline pylint score: 9.08/10
 - Added module/function docstrings in main.py.
 - Added module/class docstrings in bank.py.
 - Pylint score: 9.31/10 -> 9.39/10.
+
+### Iteration 6: Remaining module documentation
+- Added module docstrings to board, cards, config, dice, game, player, property, and ui.
+- Added missing PropertyGroup class docstring.
+- Fixed missing final newline in player.py.
+- Pylint score: 9.39/10 -> 9.54/10.

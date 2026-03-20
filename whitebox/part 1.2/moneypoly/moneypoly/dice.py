@@ -1,3 +1,5 @@
+"""Dice behavior used by MoneyPoly movement and doubles logic."""
+
 import random
 
 class Dice:

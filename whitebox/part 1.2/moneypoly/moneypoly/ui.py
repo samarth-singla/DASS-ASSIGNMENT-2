@@ -1,3 +1,5 @@
+"""Console rendering and input helper utilities for MoneyPoly."""
+
 def print_banner(title):
     """Print a decorated section header."""
     width = 52
