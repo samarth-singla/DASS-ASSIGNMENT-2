@@ -99,3 +99,9 @@ This section will be appended before each `Error #` commit with:
 - Failing test: `test_net_worth_includes_property_values`
 - Root cause: `Player.net_worth` returns cash balance only, excluding owned property value.
 - Change to apply: Include property prices in net-worth calculation.
+
+## Error 10 Planned Fix
+
+- Failing test: `test_buy_property_rejects_already_owned_tile`
+- Root cause: `Game.buy_property` does not verify whether property is already owned.
+- Change to apply: Return `False` without mutating state when `prop.owner` is not `None`.

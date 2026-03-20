@@ -111,6 +111,22 @@ class TestWhiteBoxCases(unittest.TestCase):
         player.add_property(prop)
         self.assertEqual(player.net_worth(), player.balance + 200)
 
+    def test_buy_property_rejects_already_owned_tile(self):
+        """Buying an already-owned property should fail and keep ownership."""
+        game = Game(["A", "B"])
+        owner = game.players[0]
+        buyer = game.players[1]
+        prop = game.board.properties[0]
+        prop.owner = owner
+        owner.add_property(prop)
+        buyer_start_balance = buyer.balance
+
+        success = game.buy_property(buyer, prop)
+
+        self.assertFalse(success)
+        self.assertEqual(prop.owner, owner)
+        self.assertEqual(buyer.balance, buyer_start_balance)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
