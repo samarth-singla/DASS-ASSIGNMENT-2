@@ -1,5 +1,7 @@
 """Player entity state and actions for MoneyPoly gameplay."""
 
+# pylint: disable=too-many-instance-attributes
+
 from moneypoly.config import STARTING_BALANCE, BOARD_SIZE, GO_SALARY, JAIL_POSITION
 
 

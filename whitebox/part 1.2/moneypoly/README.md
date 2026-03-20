@@ -40,3 +40,13 @@ Baseline pylint score: 9.08/10
 - Added missing PropertyGroup class docstring.
 - Fixed missing final newline in player.py.
 - Pylint score: 9.39/10 -> 9.54/10.
+
+### Iteration 7: Final lint pass and correctness updates
+- Reformatted card definitions to resolve all line-length warnings.
+- Added targeted pylint suppressions for intentional class complexity.
+- Fixed dice roll bounds to standard 1-6.
+- Fixed winner selection to highest net worth.
+- Fixed rent transfer to property owner.
+- Fixed full-group ownership check logic in PropertyGroup.
+- Corrected exact-cash property purchase condition.
+- Pylint score: 9.54/10 -> 10.00/10.

@@ -1,5 +1,7 @@
 """Property and property-group models for the MoneyPoly board."""
 
+# pylint: disable=too-many-instance-attributes,too-many-arguments,too-many-positional-arguments
+
 class Property:
     """Represents a single purchasable property tile on the MoneyPoly board."""
 
@@ -80,7 +82,7 @@ class PropertyGroup:
         """Return True if every property in this group is owned by `player`."""
         if player is None:
             return False
-        return any(p.owner == player for p in self.properties)
+        return all(p.owner == player for p in self.properties)
 
     def get_owner_counts(self):
         """Return a dict mapping each owner to how many properties they hold in this group."""
