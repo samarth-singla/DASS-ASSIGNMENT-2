@@ -1,10 +1,6 @@
-# Instructions To Run
+# Whitebox Code Quality Log
 
-```
-python main.py
-```
-
-## Part 1.2 - Code Quality Analysis (pylint)
+## Part 1.2 - MoneyPoly
 
 Baseline pylint score: 9.08/10
 
