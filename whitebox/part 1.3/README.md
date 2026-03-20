@@ -1,0 +1,47 @@
+# Part 1.3 - White Box Test Cases
+
+## Initial White-Box Test Set (Before Fixes)
+
+This section lists all designed tests before any bug-fix commits.
+Each test is derived from branch/state analysis of the source code.
+
+1. `test_bank_collect_negative_is_ignored`
+- Path covered: `Bank.collect` with negative amount.
+- Why needed: The method docstring says negative amounts are ignored.
+- Risk covered: Silent balance corruption if negative values reduce reserves.
+
+2. `test_give_loan_reduces_bank_reserves`
+- Path covered: `Bank.give_loan` for positive loan value.
+- Why needed: Loan operation should transfer money from bank to player.
+- Risk covered: Money creation if player gains funds without bank deduction.
+
+3. `test_player_move_passing_go_grants_salary`
+- Path covered: `Player.move` wrap-around (`old + steps >= BOARD_SIZE`).
+- Why needed: Passing Go should reward salary according to game rules.
+- Risk covered: Missing salary on wrap-around movement.
+
+4. `test_jail_voluntary_fine_deducts_player_balance`
+- Path covered: `_handle_jail_turn` voluntary fine branch (`confirm -> True`).
+- Why needed: Paying fine should reduce player balance and increase bank balance.
+- Risk covered: Inconsistent money flow while leaving jail.
+
+5. `test_trade_credits_seller`
+- Path covered: `Game.trade` successful path.
+- Why needed: Buyer-to-seller cash transfer is required for a valid sale.
+- Risk covered: Seller not credited and money disappearing from the system.
+
+## Run Command
+
+From repository root:
+
+```powershell
+& "c:/Users/Lenovo/Desktop/DASS Assignment 2/.venv/Scripts/python.exe" -m unittest -v "whitebox/part 1.3/test_whitebox_cases.py"
+```
+
+## Error-Fix Commit Log
+
+This section will be appended before each `Error #` commit with:
+- failing test(s)
+- root cause
+- code change summary
+- commit hash
