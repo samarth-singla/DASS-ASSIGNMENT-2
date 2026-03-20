@@ -93,3 +93,9 @@ This section will be appended before each `Error #` commit with:
 - Failing test: `test_empty_property_group_is_not_fully_owned`
 - Root cause: `PropertyGroup.all_owned_by` returns `True` for empty groups due to `all([])` semantics.
 - Change to apply: Return `False` when the group has zero properties.
+
+## Error 9 Planned Fix
+
+- Failing test: `test_net_worth_includes_property_values`
+- Root cause: `Player.net_worth` returns cash balance only, excluding owned property value.
+- Change to apply: Include property prices in net-worth calculation.

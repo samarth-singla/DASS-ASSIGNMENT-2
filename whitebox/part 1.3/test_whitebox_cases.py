@@ -15,7 +15,7 @@ from moneypoly.cards import CardDeck
 from moneypoly.config import GO_SALARY, JAIL_FINE
 from moneypoly.game import Game
 from moneypoly.player import Player
-from moneypoly.property import PropertyGroup
+from moneypoly.property import Property, PropertyGroup
 
 
 class TestWhiteBoxCases(unittest.TestCase):
@@ -103,6 +103,13 @@ class TestWhiteBoxCases(unittest.TestCase):
         group = PropertyGroup("Test", "test")
         player = Player("A")
         self.assertFalse(group.all_owned_by(player))
+
+    def test_net_worth_includes_property_values(self):
+        """Net worth should include both cash and owned property prices."""
+        player = Player("A")
+        prop = Property("Test", 1, 200, 10)
+        player.add_property(prop)
+        self.assertEqual(player.net_worth(), player.balance + 200)
 
 
 if __name__ == "__main__":
