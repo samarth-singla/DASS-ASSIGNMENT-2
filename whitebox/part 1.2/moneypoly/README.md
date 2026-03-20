@@ -24,3 +24,8 @@ Baseline pylint score: 9.08/10
 - Fixed superfluous f-string usage and no-else-break style issue.
 - Simplified range checks and added missing final newline.
 - Pylint score: 9.17/10 -> 9.28/10.
+
+### Iteration 4: Board and property style fixes
+- Replaced singleton comparison in board purchasable check.
+- Simplified unmortgage return flow in property module.
+- Pylint score: 9.28/10 -> 9.31/10.
