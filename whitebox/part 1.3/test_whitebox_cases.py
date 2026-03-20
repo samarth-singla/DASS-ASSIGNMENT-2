@@ -15,6 +15,7 @@ from moneypoly.cards import CardDeck
 from moneypoly.config import GO_SALARY, JAIL_FINE
 from moneypoly.game import Game
 from moneypoly.player import Player
+from moneypoly.property import PropertyGroup
 
 
 class TestWhiteBoxCases(unittest.TestCase):
@@ -96,6 +97,12 @@ class TestWhiteBoxCases(unittest.TestCase):
         deck = CardDeck([])
         repr_text = repr(deck)
         self.assertIn("CardDeck(0 cards", repr_text)
+
+    def test_empty_property_group_is_not_fully_owned(self):
+        """An empty property group should not count as fully owned."""
+        group = PropertyGroup("Test", "test")
+        player = Player("A")
+        self.assertFalse(group.all_owned_by(player))
 
 
 if __name__ == "__main__":

@@ -87,3 +87,9 @@ This section will be appended before each `Error #` commit with:
 - Failing test: `test_empty_deck_repr_does_not_crash`
 - Root cause: `CardDeck.__repr__` performs modulo with `len(self.cards)` and crashes when deck is empty.
 - Change to apply: Use a safe `next_index` value (`0`) for empty decks.
+
+## Error 8 Planned Fix
+
+- Failing test: `test_empty_property_group_is_not_fully_owned`
+- Root cause: `PropertyGroup.all_owned_by` returns `True` for empty groups due to `all([])` semantics.
+- Change to apply: Return `False` when the group has zero properties.
