@@ -51,3 +51,9 @@ This section will be appended before each `Error #` commit with:
 - Failing test: `test_bank_collect_negative_is_ignored`
 - Root cause: `Bank.collect` adds negative values directly, reducing bank reserves.
 - Change to apply: Return early for negative amounts so they are ignored.
+
+## Error 2 Planned Fix
+
+- Failing test: `test_give_loan_reduces_bank_reserves`
+- Root cause: `Bank.give_loan` credits player but does not deduct bank reserves.
+- Change to apply: Subtract loan amount from bank funds when loan is issued.
