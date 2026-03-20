@@ -69,3 +69,9 @@ This section will be appended before each `Error #` commit with:
 - Failing test: `test_jail_voluntary_fine_deducts_player_balance`
 - Root cause: Voluntary jail-fine branch collects bank money but does not deduct the player's balance.
 - Change to apply: Deduct `JAIL_FINE` from player before releasing from jail.
+
+## Error 5 Planned Fix
+
+- Failing test: `test_trade_credits_seller`
+- Root cause: `Game.trade` deducts cash from buyer but does not credit seller.
+- Change to apply: Add seller cash credit when trade succeeds.
