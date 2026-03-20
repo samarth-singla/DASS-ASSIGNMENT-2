@@ -75,3 +75,9 @@ This section will be appended before each `Error #` commit with:
 - Failing test: `test_trade_credits_seller`
 - Root cause: `Game.trade` deducts cash from buyer but does not credit seller.
 - Change to apply: Add seller cash credit when trade succeeds.
+
+## Error 6 Planned Fix
+
+- Failing test: `test_empty_deck_cards_remaining_is_zero`
+- Root cause: `CardDeck.cards_remaining` performs modulo with `len(self.cards)` and crashes when deck is empty.
+- Change to apply: Return `0` immediately for empty decks.

@@ -11,6 +11,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from moneypoly.bank import Bank
+from moneypoly.cards import CardDeck
 from moneypoly.config import GO_SALARY, JAIL_FINE
 from moneypoly.game import Game
 from moneypoly.player import Player
@@ -84,6 +85,11 @@ class TestWhiteBoxCases(unittest.TestCase):
         self.assertEqual(buyer.balance, start_buyer - 150)
         self.assertEqual(seller.balance, start_seller + 150)
         self.assertEqual(prop.owner, buyer)
+
+    def test_empty_deck_cards_remaining_is_zero(self):
+        """cards_remaining should be safe and return 0 for an empty deck."""
+        deck = CardDeck([])
+        self.assertEqual(deck.cards_remaining(), 0)
 
 
 if __name__ == "__main__":
