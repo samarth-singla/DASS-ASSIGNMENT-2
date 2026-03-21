@@ -82,3 +82,72 @@ python -m coverage report -m integration/code/*.py
 If python is not mapped to your active environment, replace python with:
 
 "c:/Users/Lenovo/Desktop/DASS Assignment 2/.venv/Scripts/python.exe"
+
+### 4) Blackbox Part (Part 3 - QuickCart API)
+
+Important: run Docker/API commands from the blackbox folder, and run pytest from repository root.
+
+Go to blackbox folder:
+
+Set-Location "C:\Users\Lenovo\Desktop\DASS Assignment 2\DASS-ASSIGNMENT-2\blackbox"
+
+Load the API Docker image (if not loaded yet):
+
+docker load -i quickcart_image_x86.tar
+
+If a container with same name already exists, remove it first:
+
+docker stop quickcart-api
+docker rm quickcart-api
+
+Run API container:
+
+docker run --name quickcart-api -p 8080:8080 quickcart
+
+In a new PowerShell terminal, run blackbox tests:
+
+Set-Location "C:\Users\Lenovo\Desktop\DASS Assignment 2\DASS-ASSIGNMENT-2"
+$env:QUICKCART_ROLL_NUMBER="2024101020"
+python -m pytest -q blackbox/tests
+
+Run blackbox coverage:
+
+Set-Location "C:\Users\Lenovo\Desktop\DASS Assignment 2\DASS-ASSIGNMENT-2"
+python -m coverage erase
+python -m coverage run -m pytest -q blackbox/tests
+python -m coverage report -m blackbox/tests/*.py
+
+Stop and remove API container after testing:
+
+docker stop quickcart-api
+docker rm quickcart-api
+
+## Python Libraries Installed In Project venv
+
+Python version in venv: 3.13.7
+
+Directly installed/used for this assignment:
+
+- pylint (4.0.5)
+- pytest (9.0.2)
+- requests (2.32.5)
+- coverage (7.13.5)
+
+Dependencies currently present in venv:
+
+- astroid (4.0.4)
+- certifi (2026.2.25)
+- charset-normalizer (3.4.6)
+- colorama (0.4.6)
+- dill (0.4.1)
+- idna (3.11)
+- iniconfig (2.3.0)
+- isort (8.0.1)
+- mccabe (0.7.0)
+- packaging (26.0)
+- pip (26.0.1)
+- platformdirs (4.9.4)
+- pluggy (1.6.0)
+- Pygments (2.19.2)
+- tomlkit (0.14.0)
+- urllib3 (2.6.3)
