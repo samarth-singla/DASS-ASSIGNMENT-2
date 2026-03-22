@@ -1,0 +1,69 @@
+Part 1.2 Report - Code Quality Analysis (pylint)
+
+Tool Used:
+- pylint
+
+Baseline:
+- Initial pylint score: 9.08/10
+
+Iteration 1: Basic cleanup
+- Commit: 0b76081b10b97f82df15986390bda132d2cb3c2b
+- What changed:
+  - Removed unused import from bank module.
+  - Removed unused import and variable from player module.
+  - Replaced bare except with explicit exception handling in input parsing.
+- Score change: 9.08 -> 9.14
+
+Iteration 2: Dice cleanup
+- Commit: 5373e4fe20e79573fba1203603e48090dd6a8a04
+- What changed:
+  - Removed unused BOARD_SIZE import from dice module.
+  - Initialized doubles_streak in constructor.
+- Score change: 9.14 -> 9.17
+
+Iteration 3: Game module style cleanup
+- Commit: 372c8f24939d107eeedcc99d8ddbf5a515f5577c
+- What changed:
+  - Removed unused imports in game module.
+  - Fixed superfluous f-string usage.
+  - Fixed no-else-break style issue.
+  - Simplified range checks and fixed final newline.
+- Score change: 9.17 -> 9.28
+
+Iteration 4: Board and property style fixes
+- Commit: f0ab6bc366e6eec6df84ee1f02650256a7097aed
+- What changed:
+  - Replaced singleton comparison in board purchasable check.
+  - Simplified unmortgage return flow in property module.
+- Score change: 9.28 -> 9.31
+
+Iteration 5: Entrypoint and bank documentation
+- Commit: ed11886e697d8d6cedd3d79cf425cbe39252c877
+- What changed:
+  - Added module and function docstrings in main.py.
+  - Added module and class docstrings in bank.py.
+- Score change: 9.31 -> 9.39
+
+Iteration 6: Remaining module documentation
+- Commit: de92f81ac439a58ecccec7e8e86699f60af3c54b
+- What changed:
+  - Added module docstrings to board, cards, config, dice, game, player, property, and ui.
+  - Added missing PropertyGroup class docstring.
+  - Fixed missing final newline in player.py.
+- Score change: 9.39 -> 9.54
+
+Iteration 7: Final lint pass and correctness updates
+- Commit: 83678f0940a3d28530ec569d8c147a5a02b634f9
+- What changed:
+  - Reformatted card definitions to resolve line-length warnings.
+  - Added targeted pylint suppressions for intentional class complexity.
+  - Fixed dice roll bounds to 1-6.
+  - Fixed winner selection to highest net worth.
+  - Fixed rent transfer to property owner.
+  - Fixed full-group ownership check logic in PropertyGroup.
+  - Corrected exact-cash property purchase condition.
+- Score change: 9.54 -> 10.00
+
+Final Result:
+- Final pylint score: 10.00/10
+- All iteration changes are documented above in required format.

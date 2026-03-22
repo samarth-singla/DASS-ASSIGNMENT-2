@@ -1,0 +1,258 @@
+Part 3 Report - Black Box API Testing Bug Report
+
+Base URL
+- http://localhost:8080/api/v1
+
+Common Header Used
+- X-Roll-Number: 2024101020
+
+Bug 1
+- Endpoint tested: /profile
+- Request payload:
+  - Method: GET
+  - URL: http://localhost:8080/api/v1/profile
+  - Headers: X-Roll-Number=2024101020, X-User-ID=99999999
+  - Body: None
+- Expected result (based on API doc): 400 for invalid user context. The endpoint should follow this contract for the given input/state.
+- Actual result observed: 404 with message "User not found". This is a reproducible documented-vs-implementation mismatch.
+
+Bug 2
+- Endpoint tested: /addresses
+- Request payload:
+  - Method: POST
+  - URL: http://localhost:8080/api/v1/addresses
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: {"label":"HOME","street":"12345 Main Street","city":"Delhi","pincode":"110001","is_default":false}
+- Expected result (based on API doc): 200 and address created. The endpoint should follow this contract for the given input/state.
+- Actual result observed: 400 "Invalid pincode". This is a reproducible documented-vs-implementation mismatch.
+
+Bug 3
+- Endpoint tested: /addresses
+- Request payload:
+  - Method: POST
+  - URL: http://localhost:8080/api/v1/addresses
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: {"label":"OTHER","street":"abcde","city":"Delhi","pincode":"110001","is_default":false}
+- Expected result (based on API doc): 200 for valid minimum street length. The endpoint should follow this contract for the given input/state.
+- Actual result observed: 400 "Invalid pincode". This is a reproducible documented-vs-implementation mismatch.
+
+Bug 4
+- Endpoint tested: /addresses
+- Request payload:
+  - Method: POST
+  - URL: http://localhost:8080/api/v1/addresses
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: {"label":"OFFICE","street":"12345 Main Street","city":"De","pincode":"110001","is_default":false}
+- Expected result (based on API doc): 200 for valid minimum city length. The endpoint should follow this contract for the given input/state.
+- Actual result observed: 400 "Invalid pincode". This is a reproducible documented-vs-implementation mismatch.
+
+Bug 5
+- Endpoint tested: /profile
+- Request payload:
+  - Method: PUT
+  - URL: http://localhost:8080/api/v1/profile
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: {"name":"Aarav Tester","phone":"98765A3210"}
+- Expected result (based on API doc): 400 because phone must be 10 digits. The endpoint should follow this contract for the given input/state.
+- Actual result observed: 200 profile update success. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 6
+- Endpoint tested: /cart/add
+- Request payload:
+  - Method: POST
+  - URL: http://localhost:8080/api/v1/cart/add
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: {"product_id":1,"quantity":0}
+- Expected result (based on API doc): 400 because quantity must be >= 1. The endpoint should follow this contract for the given input/state.
+- Actual result observed: 200 item added. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 7
+- Endpoint tested: /cart
+- Request payload:
+  - Method: GET
+  - URL: http://localhost:8080/api/v1/cart
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>
+  - Body: None
+- Expected result (based on API doc): total equals sum of item subtotals. The endpoint should follow this contract for the given input/state.
+- Actual result observed: total mismatched subtotal sum. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 8
+- Endpoint tested: /cart
+- Request payload:
+  - Method: GET
+  - URL: http://localhost:8080/api/v1/cart
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>
+  - Body: None
+- Expected result (based on API doc): stable, deterministic subtotal/total arithmetic. The endpoint should follow this contract for the given input/state.
+- Actual result observed: inconsistent arithmetic after add/update cycles. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 9
+- Endpoint tested: /coupon/apply
+- Request payload:
+  - Method: POST
+  - URL: http://localhost:8080/api/v1/coupon/apply
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: {"code":"BONUS75"}
+- Expected result (based on API doc): coupon accepted/rejected by business rules only. The endpoint should follow this contract for the given input/state.
+- Actual result observed: 400 "Invalid coupon" even for listed valid code. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 10
+- Endpoint tested: /coupon/apply
+- Request payload:
+  - Method: POST
+  - URL: http://localhost:8080/api/v1/coupon/apply
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body A: {"coupon_code":"BONUS75"}
+  - Body B: {"code":"BONUS75"}
+- Expected result (based on API doc): one clear documented payload contract. The endpoint should follow this contract for the given input/state.
+- Actual result observed: coupon_code path works; code path fails. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 11
+- Endpoint tested: /checkout
+- Request payload:
+  - Method: POST
+  - URL: http://localhost:8080/api/v1/checkout
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>
+  - Body: None
+- Expected result (based on API doc): checkout total derived consistently from cart values and GST once. The endpoint should follow this contract for the given input/state.
+- Actual result observed: total inconsistency appears when cart arithmetic is already corrupted. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 12
+- Endpoint tested: /support/tickets/{ticket_id}
+- Request payload:
+  - Method: PUT
+  - URL: http://localhost:8080/api/v1/support/tickets/<ticket_id>
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: {"status":"OPEN"} after CLOSED
+- Expected result (based on API doc): 400, backward transition not allowed. The endpoint should follow this contract for the given input/state.
+- Actual result observed: 200. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 13
+- Endpoint tested: /support/tickets/{ticket_id}
+- Request payload:
+  - Method: PUT
+  - URL: http://localhost:8080/api/v1/support/tickets/<ticket_id>
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: {"status":"CLOSED"} from OPEN
+- Expected result (based on API doc): only OPEN -> IN_PROGRESS should be allowed. The endpoint should follow this contract for the given input/state.
+- Actual result observed: 200. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 14
+- Endpoint tested: /support/tickets/{ticket_id}
+- Request payload:
+  - Method: PUT
+  - URL: http://localhost:8080/api/v1/support/tickets/<ticket_id>
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: {"status":"DONE"}
+- Expected result (based on API doc): 400 invalid status enum. The endpoint should follow this contract for the given input/state.
+- Actual result observed: 200. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 15
+- Endpoint tested: /support/tickets/{ticket_id}
+- Request payload:
+  - Method: PUT
+  - URL: http://localhost:8080/api/v1/support/tickets/<ticket_id>
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: {"status":"OPEN"} from OPEN
+- Expected result (based on API doc): reject no-op transition. The endpoint should follow this contract for the given input/state.
+- Actual result observed: 200. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 16
+- Endpoint tested: /support/tickets/{ticket_id}
+- Request payload:
+  - Method: PUT
+  - URL: http://localhost:8080/api/v1/support/tickets/<ticket_id>
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: {"status":"OPEN"} from IN_PROGRESS
+- Expected result (based on API doc): reject backward transition. The endpoint should follow this contract for the given input/state.
+- Actual result observed: 200. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 17
+- Endpoint tested: /support/tickets/{ticket_id}
+- Request payload:
+  - Method: PUT
+  - URL: http://localhost:8080/api/v1/support/tickets/<ticket_id>
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: {"status":"IN_PROGRESS"} from CLOSED
+- Expected result (based on API doc): reject backward transition. The endpoint should follow this contract for the given input/state.
+- Actual result observed: 200. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 18
+- Endpoint tested: /support/tickets/{ticket_id}
+- Request payload:
+  - Method: PUT
+  - URL: http://localhost:8080/api/v1/support/tickets/<ticket_id>
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: {"status":"CLOSED"} from CLOSED
+- Expected result (based on API doc): reject invalid/no-op transition. The endpoint should follow this contract for the given input/state.
+- Actual result observed: 200. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 19
+- Endpoint tested: /support/tickets
+- Request payload:
+  - Method: GET
+  - URL: http://localhost:8080/api/v1/support/tickets
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>
+  - Body: None
+- Expected result (based on API doc): listing should expose exact saved ticket message. The endpoint should follow this contract for the given input/state.
+- Actual result observed: message field missing in user ticket list response. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 20
+- Endpoint tested: /products/{product_id}/reviews
+- Request payload:
+  - Method: GET
+  - URL: http://localhost:8080/api/v1/products/<product_id>/reviews
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>
+  - Body: None
+- Expected result (based on API doc): average rating keeps decimal precision (example 1.5). The endpoint should follow this contract for the given input/state.
+- Actual result observed: average truncated/rounded to integer. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 21
+- Endpoint tested: /cart/add
+- Request payload:
+  - Method: POST
+  - URL: http://localhost:8080/api/v1/cart/add
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: {"product_id":1,"quantity":-1}
+- Expected result (based on API doc): explicit validation message for quantity >= 1. The endpoint should follow this contract for the given input/state.
+- Actual result observed: message indicates quantity >= 0. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 22
+- Endpoint tested: /orders/{order_id}/cancel
+- Request payload:
+  - Method: POST
+  - URL: http://localhost:8080/api/v1/orders/<order_id>/cancel
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>
+  - Body: None
+- Expected result (based on API doc): timely structured success/failure response. The endpoint should follow this contract for the given input/state.
+- Actual result observed: intermittent request timeout. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 23
+- Endpoint tested: /addresses
+- Request payload:
+  - Method: POST
+  - URL: http://localhost:8080/api/v1/addresses
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: valid 6-digit pincodes like 110001 and 400001 with valid city/street/label.
+- Expected result (based on API doc): valid 6-digit pincodes accepted. The endpoint should follow this contract for the given input/state.
+- Actual result observed: rejected with "Invalid pincode". This is a reproducible documented-vs-implementation mismatch.
+
+Bug 24
+- Endpoint tested: /cart/add and /cart
+- Request payload:
+  - Method: POST then GET
+  - URL: http://localhost:8080/api/v1/cart/add then http://localhost:8080/api/v1/cart
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json (for POST)
+  - Body: {"product_id":1,"quantity":0} for add, then None for cart fetch.
+- Expected result (based on API doc): quantity-0 request rejected and cart state unaffected. The endpoint should follow this contract for the given input/state.
+- Actual result observed: quantity-0 accepted and contributes to cart arithmetic inconsistency. This is a reproducible documented-vs-implementation mismatch.
+
+Bug 25
+- Endpoint tested: /coupon/apply
+- Request payload:
+  - Method: POST
+  - URL: http://localhost:8080/api/v1/coupon/apply
+  - Headers: X-Roll-Number=2024101020, X-User-ID=<valid_user_id>, Content-Type=application/json
+  - Body: same coupon value sent with key coupon_code vs key code.
+- Expected result (based on API doc): unambiguous accepted request key. The endpoint should follow this contract for the given input/state.
+- Actual result observed: behavior depends on key name; documentation does not define this clearly. This is a reproducible documented-vs-implementation mismatch.

@@ -1,0 +1,370 @@
+Part 2.2 Report - Integration Test Design
+
+Modules Involved
+- Registration
+- Crew Management
+- Inventory
+- Race Management
+- Results
+- Mission Planning
+- Vehicle Maintenance
+- Sponsorship and Budget
+
+Coverage Summary
+- Command used:
+  1) python -m coverage erase
+  2) python -m coverage run -m unittest discover -s integration/tests -p "test_*.py"
+  3) python -m coverage run --append -m unittest discover -s "integration/integrationn tests" -p "test_*.py"
+  4) python -m coverage report -m integration/code/*.py
+- Result: 100% coverage for integration/code/*.py
+- Total integration test cases in integration/integrationn tests: 43
+
+Test Cases (Required Format)
+
+TC-IR-01: register_enter_race_record_results_success
+- Scenario being tested: Register drivers, enter race, record results, verify prize and vehicle release.
+- Modules involved: Registration, Race Management, Results, Inventory.
+- Why this test is needed: Validates the main end-to-end call-graph path.
+- Expected result: Entrants accepted, race completed, cash updated, vehicles released. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IR-02: enter_race_without_registered_driver_raises
+- Scenario being tested: Enter race using non-existent driver id.
+- Modules involved: Race Management, Registration.
+- Why this test is needed: Validates cross-module identity checks.
+- Expected result: ValueError. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IR-03: enter_race_with_non_driver_role_raises
+- Scenario being tested: Enter race using member with non-driver role.
+- Modules involved: Registration, Race Management.
+- Why this test is needed: Validates role constraints before race entry.
+- Expected result: ValueError. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IR-04: record_results_requires_all_entrants
+- Scenario being tested: Record results with incomplete participant list.
+- Modules involved: Race Management, Results.
+- Why this test is needed: Prevents partial/inconsistent race completion state.
+- Expected result: ValueError. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IM-01: create_and_start_mission_with_required_roles
+- Scenario being tested: Mission starts when required roles are available.
+- Modules involved: Registration, Crew Management, Mission Planning.
+- Why this test is needed: Verifies correct integration of role lookup in mission start flow.
+- Expected result: Mission starts. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IM-02: mission_start_fails_when_role_missing
+- Scenario being tested: Start mission while strategist role is missing.
+- Modules involved: Mission Planning, Crew Management.
+- Why this test is needed: Validates required-role guard branch.
+- Expected result: ValueError. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IM-03: assign_role_then_start_mission
+- Scenario being tested: Assign role then retry mission start.
+- Modules involved: Registration, Crew Management, Mission Planning.
+- Why this test is needed: Verifies state transition after role reassignment.
+- Expected result: Mission starts. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IM-04: set_skill_then_list_by_role
+- Scenario being tested: Update skill and verify role-based listing consistency.
+- Modules involved: Crew Management, Registration.
+- Why this test is needed: Verifies that role filtering does not lose member state updates.
+- Expected result: Correct member appears with updated skill. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IB-01: sponsor_payout_then_repair_updates_cash
+- Scenario being tested: Sponsor payout then repair spending.
+- Modules involved: Sponsorship and Budget, Vehicle Maintenance, Inventory.
+- Why this test is needed: Verifies chained budget operations across modules.
+- Expected result: Correct final cash, parts deduction, condition improvement. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IB-02: penalty_and_repair_can_fail_on_cash
+- Scenario being tested: Penalty leaves insufficient cash for repair.
+- Modules involved: Sponsorship and Budget, Vehicle Maintenance, Inventory.
+- Why this test is needed: Verifies negative path after prior cross-module mutation.
+- Expected result: ValueError on repair. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IB-03: add_tool_and_part_integration_state
+- Scenario being tested: Add tools and parts and verify persisted quantities.
+- Modules involved: Inventory.
+- Why this test is needed: Verifies inventory state consistency used by other modules.
+- Expected result: Quantities persisted. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IB-04: apply_wear_then_full_restore_cap
+- Scenario being tested: Apply wear then repair with cap at 100.
+- Modules involved: Vehicle Maintenance, Inventory.
+- Why this test is needed: Verifies maintenance arithmetic boundaries.
+- Expected result: Condition does not exceed 100. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IE-01: registration_empty_name_and_get_missing
+- Scenario being tested: Invalid registration name and missing member lookup.
+- Modules involved: Registration.
+- Why this test is needed: Verifies foundational validation branches.
+- Expected result: ValueError for both calls. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IE-02: race_not_found_and_vehicle_validation_paths
+- Scenario being tested: Missing race and missing vehicle during entry.
+- Modules involved: Race Management, Registration, Inventory.
+- Why this test is needed: Verifies cross-module reference validation.
+- Expected result: ValueError for both paths. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IE-03: results_invalid_race_and_negative_prize
+- Scenario being tested: Invalid race id and negative prize in result recording.
+- Modules involved: Results, Race Management, Inventory.
+- Why this test is needed: Verifies result data integrity constraints.
+- Expected result: ValueError for invalid operations. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IE-04: inventory_negative_quantity_paths
+- Scenario being tested: Negative part/tool quantity and invalid vehicle availability update.
+- Modules involved: Inventory.
+- Why this test is needed: Verifies guard rails for shared state module.
+- Expected result: ValueError for invalid operations. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IE-05: mission_create_and_start_invalid_paths
+- Scenario being tested: Empty mission title/roles and start missing mission.
+- Modules involved: Mission Planning.
+- Why this test is needed: Verifies mission creation/start preconditions.
+- Expected result: ValueError for invalid operations. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IE-06: sponsorship_invalid_paths
+- Scenario being tested: Invalid contract inputs and invalid payout/penalty requests.
+- Modules involved: Sponsorship and Budget, Inventory.
+- Why this test is needed: Verifies financial data validation boundaries.
+- Expected result: ValueError for invalid operations. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IE-07: maintenance_invalid_paths
+- Scenario being tested: Invalid wear/repair values across guarded branches.
+- Modules involved: Vehicle Maintenance, Inventory.
+- Why this test is needed: Verifies maintenance guard branches end-to-end.
+- Expected result: ValueError for invalid operations. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-ID-01: registration_duplicate_name_blocks_second_member
+- Scenario being tested: Duplicate member registration by case-insensitive name.
+- Modules involved: Registration.
+- Why this test is needed: Prevents duplicate identities that break downstream flows.
+- Expected result: ValueError on second registration. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-ID-02: leaderboard_sort_order_for_tie_points
+- Scenario being tested: Leaderboard ordering when points tie.
+- Modules involved: Results, Registration.
+- Why this test is needed: Verifies deterministic ordering rule for equal points.
+- Expected result: Points desc, id asc tie-break. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-ID-03: set_skill_rejects_out_of_range_level
+- Scenario being tested: Set skill above valid range.
+- Modules involved: Crew Management, Registration.
+- Why this test is needed: Verifies skill bounds used in crew validation.
+- Expected result: ValueError. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IV-01: vehicle_unavailable_immediately_after_entry
+- Scenario being tested: Vehicle availability right after race entry.
+- Modules involved: Race Management, Inventory, Registration.
+- Why this test is needed: Ensures no double-booking of race vehicles.
+- Expected result: Availability set to False. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IV-02: vehicle_released_after_result_submission
+- Scenario being tested: Vehicle release after results submission.
+- Modules involved: Race Management, Results, Inventory.
+- Why this test is needed: Verifies lifecycle completion state reset.
+- Expected result: Availability set back to True. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IV-03: reuse_same_vehicle_in_new_race_after_release
+- Scenario being tested: Re-enter same vehicle in next race after release.
+- Modules involved: Race Management, Results, Inventory.
+- Why this test is needed: Verifies reuse path across race cycles.
+- Expected result: Entry succeeds. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IC-01: duplicate_contract_check_is_case_insensitive
+- Scenario being tested: Duplicate sponsor contract using different case.
+- Modules involved: Sponsorship and Budget.
+- Why this test is needed: Prevents duplicate financial contracts.
+- Expected result: ValueError. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IC-02: receive_payout_requires_exact_registered_key
+- Scenario being tested: Request payout using wrong sponsor key case.
+- Modules involved: Sponsorship and Budget, Inventory.
+- Why this test is needed: Verifies contract key integrity across modules.
+- Expected result: ValueError. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IC-03: penalty_then_payout_keeps_budget_consistent
+- Scenario being tested: Penalty followed by payout sequence.
+- Modules involved: Sponsorship and Budget, Inventory.
+- Why this test is needed: Verifies net cash consistency in combined operations.
+- Expected result: Final cash equals expected sequence outcome. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IL-01: start_mission_twice_raises_error
+- Scenario being tested: Start already-started mission.
+- Modules involved: Mission Planning.
+- Why this test is needed: Verifies mission lifecycle guard.
+- Expected result: ValueError on second start. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IL-02: list_by_role_returns_empty_for_unknown_role
+- Scenario being tested: List members by role not assigned to anyone.
+- Modules involved: Crew Management, Registration.
+- Why this test is needed: Verifies safe empty-query behavior.
+- Expected result: Empty list. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IL-03: create_mission_normalizes_role_text
+- Scenario being tested: Required role normalization for spaces/case.
+- Modules involved: Mission Planning.
+- Why this test is needed: Prevents role matching failures caused by formatting.
+- Expected result: Normalized lowercase/trimmed role list. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IP-01: points_accumulate_across_two_races
+- Scenario being tested: Points accumulation over multiple races.
+- Modules involved: Registration, Race Management, Results, Inventory.
+- Why this test is needed: Verifies long-running competition state.
+- Expected result: Cumulative points retained. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IP-02: cash_accumulates_with_multiple_prizes
+- Scenario being tested: Multiple prize updates over races.
+- Modules involved: Results, Inventory, Race Management.
+- Why this test is needed: Verifies financial accumulation over time.
+- Expected result: Cash increases by sum of prizes. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IP-03: leaderboard_after_multiple_races
+- Scenario being tested: Leaderboard ranking after multiple races.
+- Modules involved: Results, Registration.
+- Why this test is needed: Verifies final ranking consistency after updates.
+- Expected result: Highest cumulative points first. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IP-04: completed_race_rejects_second_record
+- Scenario being tested: Submit results twice for same race.
+- Modules involved: Results, Race Management.
+- Why this test is needed: Prevents duplicate completion and double-application of prize/points.
+- Expected result: ValueError on second submission. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IQ-01: cash_can_reach_exact_zero
+- Scenario being tested: Cash update to exact zero boundary.
+- Modules involved: Inventory.
+- Why this test is needed: Verifies lower valid boundary handling.
+- Expected result: Operation succeeds, balance becomes 0. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IQ-02: cash_cannot_go_below_zero
+- Scenario being tested: Cash update below zero.
+- Modules involved: Inventory.
+- Why this test is needed: Verifies non-negative budget invariant.
+- Expected result: ValueError. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IQ-03: payout_recovers_after_near_zero
+- Scenario being tested: Sponsor payout after near-zero balance.
+- Modules involved: Sponsorship and Budget, Inventory.
+- Why this test is needed: Verifies recovery flow from low-cash state.
+- Expected result: Balance increases correctly. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IQ-04: repair_with_exact_remaining_cash_succeeds
+- Scenario being tested: Repair uses exactly remaining cash.
+- Modules involved: Vehicle Maintenance, Inventory.
+- Why this test is needed: Verifies exact-boundary spending path.
+- Expected result: Repair succeeds, balance becomes 0. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IT-01: mechanic_cannot_enter_race_before_role_change
+- Scenario being tested: Race entry by non-driver role.
+- Modules involved: Registration, Race Management.
+- Why this test is needed: Verifies role-based race guard.
+- Expected result: ValueError. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IT-02: member_can_enter_race_after_driver_assignment
+- Scenario being tested: Race entry after role reassignment to driver.
+- Modules involved: Crew Management, Race Management, Registration.
+- Why this test is needed: Verifies role transition effect on race eligibility.
+- Expected result: Entry succeeds. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IT-03: member_can_satisfy_strategist_mission_after_role_change
+- Scenario being tested: Mission role requirement satisfied after role change.
+- Modules involved: Crew Management, Mission Planning, Registration.
+- Why this test is needed: Verifies role transition effect on mission validation.
+- Expected result: Mission starts. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+TC-IT-04: role_reassignment_updates_role_lists
+- Scenario being tested: Old/new role lists after reassignment.
+- Modules involved: Crew Management, Registration.
+- Why this test is needed: Verifies consistent indexing after role updates.
+- Expected result: Present in new role list, absent from old role list. This confirms validation behavior and cross-module state consistency for the scenario.
+- Actual result after testing: Passed. Runtime output/exceptions matched the intended path and no unintended side effects were observed.
+- Errors/logical issues found: None.
+
+Errors or Logical Issues Detected and Fixed
+- No integration defects were found during these 43 test executions.
+- Therefore, no integration bug-fix commit entries are required for Part 2.2 report.
