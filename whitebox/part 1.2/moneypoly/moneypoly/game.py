@@ -332,10 +332,26 @@ class Game:
                 player.add_money(GO_SALARY)
                 print(f"  {player.name} passed Go and collected ${GO_SALARY}.")
             tile = self.board.get_tile_type(value)
-            if tile == "property":
+            if tile == "go_to_jail":
+                player.go_to_jail()
+                print(f"  {player.name} has been sent to Jail!")
+            elif tile == "income_tax":
+                player.deduct_money(INCOME_TAX_AMOUNT)
+                self.bank.collect(INCOME_TAX_AMOUNT)
+            elif tile == "luxury_tax":
+                player.deduct_money(LUXURY_TAX_AMOUNT)
+                self.bank.collect(LUXURY_TAX_AMOUNT)
+            elif tile == "chance":
+                next_card = self.chance_deck.draw()
+                self._apply_card(player, next_card)
+            elif tile == "community_chest":
+                next_card = self.community_deck.draw()
+                self._apply_card(player, next_card)
+            elif tile in ("property", "railroad"):
                 prop = self.board.get_property_at(value)
                 if prop:
                     self._handle_property_tile(player, prop)
+            self._check_bankruptcy(player)
 
         elif action == "birthday":
             for other in self.players:
