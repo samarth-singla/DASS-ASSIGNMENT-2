@@ -1,140 +1,81 @@
 Part 1.3 Report - White Box Test Cases
 
-Test Design Coverage
+Expanded Test Suite Summary
+- Total white-box tests executed: 162
+- Areas covered: Bank, Board, CardDeck, Dice, Player, Property/PropertyGroup, Game flow, UI helpers
+- Coverage intent:
+  - All major decision branches in gameplay logic
+  - Key variable states (cash, ownership, jail status, mortgage state, turn state)
+  - Relevant edge cases (empty deck/group, invalid amounts, boundary movement, invalid trade values)
 
-Branch coverage (decision paths):
-- test_bank_collect_negative_is_ignored
-- test_give_loan_reduces_bank_reserves
-- test_player_move_passing_go_grants_salary
-- test_jail_voluntary_fine_deducts_player_balance
-- test_trade_credits_seller
-- test_dice_roll_values_are_between_1_and_6
-- test_find_winner_returns_highest_net_worth_player
-- test_buy_property_allows_exact_balance
-- test_pay_rent_transfers_to_owner
-- test_empty_deck_cards_remaining_is_zero
-- test_empty_deck_repr_does_not_crash
-- test_empty_property_group_is_not_fully_owned
-- test_net_worth_includes_property_values
-- test_buy_property_rejects_already_owned_tile
+Execution Result
+- Command used:
+  - python -m unittest discover -s "whitebox/part 1.3" -p "test_*.py" -v
+- Final outcome after fixes:
+  - 162 tests run
+  - 162 passed
+  - 0 failed
+  - 0 errors
 
-Key variable state coverage:
-- Bank reserves after collect/loan.
-- Player balance after jail fine, rent, and purchases.
-- Player net worth with owned assets.
-- Property ownership state before and after purchase/trade.
-- CardDeck state when deck is empty.
-- PropertyGroup state when group has zero properties.
+Errors Found During Expansion (and Corrected)
 
-Edge case coverage:
-- Negative amount input to collect.
-- Empty CardDeck operations.
-- Empty PropertyGroup ownership query.
-- Exact-balance property purchase.
-- Passing Go movement boundary.
-- Dice roll lower/upper bounds.
-- Already-owned property purchase attempt.
+Error 11: Mortgage payout did not reduce bank reserves.
+- Fix commit: 74ad033
 
-Why Each Test Case Is Needed and What It Found
+Error 12: Unmortgage flow flipped mortgage state before affordability validation.
+- Fix commit: ad33c77
 
-1) test_bank_collect_negative_is_ignored
-- Why needed: Validates guard branch for invalid negative collect amount. This directly exercises the relevant branch or edge condition in code.
-- Error found: Negative value incorrectly reduced bank reserves. This could cause incorrect gameplay decisions or inconsistent state updates.
+Error 13: move_to cards did not apply full landing tile effects (go_to_jail, tax, chance/community resolution, tile re-evaluation).
+- Fix commit: 0d2d1c7
 
-2) test_give_loan_reduces_bank_reserves
-- Why needed: Verifies state consistency during loan transfer. This directly exercises the relevant branch or edge condition in code.
-- Error found: Player was credited but bank reserve was not debited. This could cause incorrect gameplay decisions or inconsistent state updates.
+Error 14: Railroad tiles existed in board map but were missing from purchasable property model.
+- Fix commit: 6aadd0a
 
-3) test_player_move_passing_go_grants_salary
-- Why needed: Verifies wrap-around branch in movement logic. This directly exercises the relevant branch or edge condition in code.
-- Error found: Salary was not granted when passing Go. This could cause incorrect gameplay decisions or inconsistent state updates.
+Error 15: Negative/non-positive trade amount was not cleanly rejected.
+- Fix commit: cbbfb46
 
-4) test_jail_voluntary_fine_deducts_player_balance
-- Why needed: Verifies fine-payment branch updates both entities. This directly exercises the relevant branch or edge condition in code.
-- Error found: Bank collected fine but player balance was not reduced. This could cause incorrect gameplay decisions or inconsistent state updates.
+Error 16: Emergency loans were issued even when bank funds were insufficient.
+- Fix commit: 6b63792
 
-5) test_trade_credits_seller
-- Why needed: Verifies successful trade path transfers money correctly. This directly exercises the relevant branch or edge condition in code.
-- Error found: Buyer paid but seller was not credited. This could cause incorrect gameplay decisions or inconsistent state updates.
+Error 17: Collect card path could raise exception when bank lacked funds.
+- Fix commit: b189bb0
 
-6) test_empty_deck_cards_remaining_is_zero
-- Why needed: Verifies cards_remaining behavior on empty state. This directly exercises the relevant branch or edge condition in code.
-- Error found: Crash due to modulo-by-zero. This could cause incorrect gameplay decisions or inconsistent state updates.
+Note on 15-20 failing test observations:
+- Multiple failing tests were generated from these core defects (for branch/state/edge variants), which is why fail count was higher than unique root-cause error count.
 
-7) test_empty_deck_repr_does_not_crash
-- Why needed: Verifies __repr__ on empty deck state. This directly exercises the relevant branch or edge condition in code.
-- Error found: Crash due to modulo-by-zero. This could cause incorrect gameplay decisions or inconsistent state updates.
-
-8) test_empty_property_group_is_not_fully_owned
-- Why needed: Verifies all_owned_by behavior for empty collections. This directly exercises the relevant branch or edge condition in code.
-- Error found: Returned True for empty group. This could cause incorrect gameplay decisions or inconsistent state updates.
-
-9) test_net_worth_includes_property_values
-- Why needed: Verifies net worth state includes assets. This directly exercises the relevant branch or edge condition in code.
-- Error found: Net worth used cash only, excluded property values. This could cause incorrect gameplay decisions or inconsistent state updates.
-
-10) test_buy_property_rejects_already_owned_tile
-- Why needed: Verifies ownership guard branch in buy flow. This directly exercises the relevant branch or edge condition in code.
-- Error found: Allowed purchase of already-owned property. This could cause incorrect gameplay decisions or inconsistent state updates.
-
-11) test_dice_roll_values_are_between_1_and_6
-- Why needed: Verifies legal boundary values for random movement. This directly exercises the relevant branch or edge condition in code.
-- Error found before fixes: Out-of-range dice values were possible. This could cause incorrect gameplay decisions or inconsistent state updates.
-
-12) test_find_winner_returns_highest_net_worth_player
-- Why needed: Verifies winner-selection branch and ordering logic. This directly exercises the relevant branch or edge condition in code.
-- Error found before fixes: Winner logic selected wrong net-worth direction. This could cause incorrect gameplay decisions or inconsistent state updates.
-
-13) test_buy_property_allows_exact_balance
-- Why needed: Verifies affordability boundary at exact cash. This directly exercises the relevant branch or edge condition in code.
-- Error found before fixes: Exact-balance purchase was rejected. This could cause incorrect gameplay decisions or inconsistent state updates.
-
-14) test_pay_rent_transfers_to_owner
-- Why needed: Verifies rent transfer branch updates owner balance. This directly exercises the relevant branch or edge condition in code.
-- Error found before fixes: Rent was deducted from payer without owner credit. This could cause incorrect gameplay decisions or inconsistent state updates.
-
-Error Fixes and Commits (Required Error # Format)
+Previously Found and Fixed Errors (1 to 10)
 
 Error 1: Ignore negative amounts in Bank.collect
 - Commit: 0124bccdbca26448b1e1e4778305c42ebcca8e86
-- Fix summary: Added guard to ignore negative collect inputs.
 
 Error 2: Deduct bank reserves on loan issue
 - Commit: e4dbe6c3b631c9ede8e811f56ada704a0aa8f7b9
-- Fix summary: Loan now debits bank reserve when crediting player.
 
 Error 3: Award Go salary when passing Go
 - Commit: 6a9742423d900b57d7c82a7ac29d941397308ec6
-- Fix summary: Wrap-around movement now awards passing-Go salary.
 
 Error 4: Deduct player balance on jail fine payment
 - Commit: 8aa7eba21cf0d7c2df585b6cfa84d19096eee6e0
-- Fix summary: Voluntary jail-fine flow now deducts player balance.
 
 Error 5: Credit seller balance during trade
 - Commit: 35c3cdb252f9bfc0cde665d4121fecc6f8c98b54
-- Fix summary: Successful trade now credits seller correctly.
 
 Error 6: Handle empty CardDeck cards_remaining
 - Commit: a1a5957b99236ee78d70dd388f8b0eb286766e7d
-- Fix summary: Empty deck returns 0 cards remaining safely.
 
 Error 7: Prevent empty CardDeck repr crash
 - Commit: b0c447af4cff3c6b69778effa656eb22e04a7f05
-- Fix summary: __repr__ now handles empty deck without modulo crash.
 
 Error 8: Disallow empty group full-ownership check
 - Commit: 89fafde923ea4450e60b6c25096c2401b04128d5
-- Fix summary: all_owned_by now returns False for empty property groups.
 
 Error 9: Include property value in net worth
 - Commit: 12d0447e450f6536536ddf8df456a96c5c7c4e51
-- Fix summary: net_worth now includes owned property values.
 
 Error 10: Block purchase of already-owned property
 - Commit: 6ae1afd3adc9eefa3cc228d405d56788f3581aa7
-- Fix summary: buy_property now rejects purchase if property already has an owner.
 
 Final Status
-- White-box tests were designed to cover branches, key states, and edge conditions.
-- Errors found by tests were fixed and committed using Error # format.
+- Part 1.3 now has broad white-box branch/state/edge coverage.
+- Errors are documented using Error numbering.
+- All current white-box tests pass after sequential error-fix commits.
