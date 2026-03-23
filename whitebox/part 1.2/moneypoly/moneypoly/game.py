@@ -175,8 +175,9 @@ class Game:
         if payout == 0:
             print(f"  {prop.name} is already mortgaged.")
             return False
+        # Mortgage payout is cash leaving the bank.
+        self.bank.pay_out(payout)
         player.add_money(payout)
-        self.bank.collect(-payout)
         print(f"  {player.name} mortgaged {prop.name} and received ${payout}.")
         return True
 
