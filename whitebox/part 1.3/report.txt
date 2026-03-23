@@ -1,81 +1,188 @@
-Part 1.3 Report - White Box Test Cases
+Part 1.3 Report - White Box Test Cases (Module-Wise Detailed Version)
 
-Expanded Test Suite Summary
+1) Overall White-Box Execution Summary
 - Total white-box tests executed: 162
-- Areas covered: Bank, Board, CardDeck, Dice, Player, Property/PropertyGroup, Game flow, UI helpers
-- Coverage intent:
-  - All major decision branches in gameplay logic
-  - Key variable states (cash, ownership, jail status, mortgage state, turn state)
-  - Relevant edge cases (empty deck/group, invalid amounts, boundary movement, invalid trade values)
-
-Execution Result
-- Command used:
-  - python -m unittest discover -s "whitebox/part 1.3" -p "test_*.py" -v
-- Final outcome after fixes:
-  - 162 tests run
+- Command used: python -m unittest discover -s "whitebox/part 1.3" -p "test_*.py" -v
+- Final result after fixes:
   - 162 passed
   - 0 failed
-  - 0 errors
+  - 0 runtime errors
 
-Errors Found During Expansion (and Corrected)
+2) Why Extensive Module-Wise White-Box Testing Was Necessary
+- MoneyPoly has many state transitions (money, ownership, jail state, mortgage state, turn index) that interact with each other.
+- A bug in one module (for example Bank or Board) can silently corrupt Game decisions later.
+- Module-wise white-box testing ensures each internal branch and guard is validated before integration behavior is trusted.
+- High-risk edge cases (negative amounts, empty collections, insufficient reserves, invalid trade amounts) are important because they are common crash or corruption sources.
 
-Error 11: Mortgage payout did not reduce bank reserves.
-- Fix commit: 74ad033
+3) Module-Wise Test Coverage and Errors Found
 
-Error 12: Unmortgage flow flipped mortgage state before affordability validation.
-- Fix commit: ad33c77
+Module: bank.py
+- What was tested:
+  - Collect/pay-out guards and accounting consistency.
+  - Loan issuance behavior for negative, zero, valid, and insufficient-bank-funds requests.
+  - Reserve updates after mortgage-related flows and emergency loan flows.
+- Representative tests:
+  - test_collect_negative_is_ignored
+  - test_pay_out_too_much_raises
+  - test_give_loan_negative_no_change
+  - test_give_loan_zero_no_change
+  - test_bug_loan_should_fail_if_bank_insufficient
+- Errors found related to this module:
+  - Error 1: Negative amounts were not ignored consistently in collect path.
+  - Error 2: Loan issue path did not correctly reduce bank reserves.
+  - Error 11: Mortgage payout flow did not debit bank reserves.
+  - Error 16: Loans were issued even when requested amount exceeded bank funds.
+- Fix status: corrected in commits 0124bcc, e4dbe6c, 74ad033, 6b63792.
 
-Error 13: move_to cards did not apply full landing tile effects (go_to_jail, tax, chance/community resolution, tile re-evaluation).
-- Fix commit: 0d2d1c7
+Module: board.py
+- What was tested:
+  - Tile-type routing across special tiles (tax, jail, chance/community) and ownable tiles.
+  - Board property model consistency with tile map.
+  - Presence of all expected purchasable properties, including railroads.
+- Representative tests:
+  - test_tile_type_4_income_tax
+  - test_tile_type_30_go_to_jail
+  - test_tile_type_7_chance
+  - test_property_tile_type_39
+  - test_bug_board_should_include_all_railroads
+- Errors found related to this module:
+  - Error 14: Railroad tiles existed in board map but were missing from purchasable property objects.
+- Fix status: corrected in commit 6aadd0a.
 
-Error 14: Railroad tiles existed in board map but were missing from purchasable property model.
-- Fix commit: 6aadd0a
+Module: cards.py
+- What was tested:
+  - CardDeck draw/peek/remaining behavior under normal and edge conditions.
+  - Empty-deck behavior (no crash, expected return values).
+  - Deck index reset and cycle logic after exhaustion.
+- Representative tests:
+  - test_draw_empty_returns_none
+  - test_draw_cycles_when_exhausted
+  - test_cards_remaining_empty_is_zero
+  - test_reshuffle_resets_index
+  - test_repr_empty_deck_safe
+- Errors found related to this module:
+  - Error 6: cards_remaining did not correctly handle empty deck.
+  - Error 7: deck repr path could crash for empty deck states.
+- Fix status: corrected in commits a1a5957, b0c447a.
 
-Error 15: Negative/non-positive trade amount was not cleanly rejected.
-- Fix commit: cbbfb46
+Module: dice.py
+- What was tested:
+  - Dice output range boundaries and pair behavior.
+  - Double detection behavior used by turn logic.
+  - Stability of repeated rolling paths used in jail/doubles rules.
+- Representative tests:
+  - test_roll_range
+  - test_is_double_true_when_faces_match
+  - test_is_double_false_when_faces_differ
+- Errors found related to this module:
+  - No direct functional defect confirmed in dice.py during this expansion.
+- Risk covered:
+  - Prevents hidden turn-logic regressions due to invalid dice outputs.
 
-Error 16: Emergency loans were issued even when bank funds were insufficient.
-- Fix commit: 6b63792
+Module: player.py
+- What was tested:
+  - Movement with and without passing Go.
+  - Jail state transitions, jail fine behavior, and bankruptcy threshold.
+  - Net worth correctness (cash plus owned properties).
+- Representative tests:
+  - test_move_without_passing_go
+  - test_move_passing_go_grants_salary
+  - test_go_to_jail_sets_state
+  - test_is_bankrupt_true_at_zero
+  - test_net_worth_includes_properties
+- Errors found related to this module:
+  - Error 3: Passing Go did not always award salary.
+  - Error 4: Jail fine flow did not deduct player balance correctly.
+  - Error 9: Net worth excluded owned property values.
+- Fix status: corrected in commits 6a97424, 8aa7eba, 12d0447.
 
-Error 17: Collect card path could raise exception when bank lacked funds.
-- Fix commit: b189bb0
+Module: property.py
+- What was tested:
+  - Rent logic for mortgaged/unmortgaged states.
+  - Group ownership effects on rent multiplier.
+  - Property availability when already owned.
+  - Empty group edge behavior for all_owned_by.
+- Representative tests:
+  - test_get_rent_zero_when_mortgaged
+  - test_get_rent_double_when_group_fully_owned
+  - test_property_not_available_when_owned
+  - test_group_owner_counts
+  - test_group_all_owned_empty_false
+- Errors found related to this module:
+  - Error 8: all_owned_by incorrectly treated empty group as fully owned.
+  - Error 10: purchase logic allowed buying already-owned property.
+- Fix status: corrected in commits 89fafde, 6ae1afd.
 
-Note on 15-20 failing test observations:
-- Multiple failing tests were generated from these core defects (for branch/state/edge variants), which is why fail count was higher than unique root-cause error count.
+Module: game.py
+- What was tested:
+  - Turn-flow branches (jail path, doubles streak path, normal branch advancement).
+  - Trade validation and ownership transfer consistency.
+  - Buy/mortgage/unmortgage sequencing and balance guards.
+  - Card action resolution, especially move_to and collect side effects.
+- Representative tests:
+  - test_play_turn_jail_path_advances_turn
+  - test_play_turn_three_doubles_goes_to_jail
+  - test_buy_property_rejects_insufficient_balance
+  - test_trade_wrong_owner_false
+  - test_bug_move_to_card_income_tax_should_deduct_tax
+  - test_bug_move_to_card_community_should_draw_card
+  - test_bug_unmortgage_insufficient_funds_should_keep_mortgaged
+  - test_bug_collect_card_should_not_crash_when_bank_low
+- Errors found related to this module:
+  - Error 5: Seller was not consistently credited during trade settlement.
+  - Error 12: Unmortgage flow cleared mortgaged flag before affordability check.
+  - Error 13: move_to card did not execute full landing tile resolution.
+  - Error 15: Non-positive trade amounts were not cleanly rejected.
+  - Error 17: collect card could crash when bank lacked funds.
+- Fix status: corrected in commits 35c3cdb, ad33c77, 0d2d1c7, cbbfb46, b189bb0.
 
-Previously Found and Fixed Errors (1 to 10)
+Module: ui.py
+- What was tested:
+  - UI helper formatting and output helpers used by gameplay screens.
+  - Stability of helper functions with empty or unusual input values.
+- Representative tests:
+  - UI helper branch and formatting tests included in white-box suite.
+- Errors found related to this module:
+  - No core logic defect confirmed in ui.py in this defect cycle.
+- Risk covered:
+  - Protects user-facing output stability while core logic changes evolve.
 
-Error 1: Ignore negative amounts in Bank.collect
-- Commit: 0124bccdbca26448b1e1e4778305c42ebcca8e86
+Module: config.py
+- What was tested:
+  - Indirectly validated via module consumers (Game/Player/Board initialization and constants usage).
+  - Consistency of configured values used by movement, salary, fines, and pricing assumptions.
+- Representative tests:
+  - Configuration-dependent tests across Player and Game branches.
+- Errors found related to this module:
+  - No direct defect isolated to config.py.
 
-Error 2: Deduct bank reserves on loan issue
-- Commit: e4dbe6c3b631c9ede8e811f56ada704a0aa8f7b9
+4) Full Error List (Consolidated)
+- Error 1: Ignore negative amounts in Bank.collect. Commit 0124bcc.
+- Error 2: Deduct bank reserves on loan issue. Commit e4dbe6c.
+- Error 3: Award Go salary when passing Go. Commit 6a97424.
+- Error 4: Deduct player balance on jail fine payment. Commit 8aa7eba.
+- Error 5: Credit seller balance during trade. Commit 35c3cdb.
+- Error 6: Handle empty CardDeck cards_remaining. Commit a1a5957.
+- Error 7: Prevent empty CardDeck repr crash. Commit b0c447a.
+- Error 8: Disallow empty group full-ownership check. Commit 89fafde.
+- Error 9: Include property value in net worth. Commit 12d0447.
+- Error 10: Block purchase of already-owned property. Commit 6ae1afd.
+- Error 11: Deduct bank reserves on mortgage payout. Commit 74ad033.
+- Error 12: Keep mortgaged state on failed unmortgage. Commit ad33c77.
+- Error 13: Apply full tile effects for move_to cards. Commit 0d2d1c7.
+- Error 14: Add railroad properties to board model. Commit 6aadd0a.
+- Error 15: Reject non-positive trade amounts. Commit cbbfb46.
+- Error 16: Block loans when bank funds are insufficient. Commit 6b63792.
+- Error 17: Handle collect-card bank shortfall without crash. Commit b189bb0.
 
-Error 3: Award Go salary when passing Go
-- Commit: 6a9742423d900b57d7c82a7ac29d941397308ec6
+5) Key Variables and Edge Cases Tracked Across Modules
+- Cash state: player.balance, bank reserves, rent/tax transfer amounts, mortgage payout/redemption costs.
+- Ownership state: property.owner, player.properties, group ownership completeness.
+- Turn and jail state: current_index, turn_number, in_jail, jail_turns, doubles_streak.
+- Card/deck state: index progression, cards_remaining, draw cycle and reset.
+- High-risk edges: negative values, zero values, empty deck/group, insufficient funds, invalid trade inputs, move_to special tile effects.
 
-Error 4: Deduct player balance on jail fine payment
-- Commit: 8aa7eba21cf0d7c2df585b6cfa84d19096eee6e0
-
-Error 5: Credit seller balance during trade
-- Commit: 35c3cdb252f9bfc0cde665d4121fecc6f8c98b54
-
-Error 6: Handle empty CardDeck cards_remaining
-- Commit: a1a5957b99236ee78d70dd388f8b0eb286766e7d
-
-Error 7: Prevent empty CardDeck repr crash
-- Commit: b0c447af4cff3c6b69778effa656eb22e04a7f05
-
-Error 8: Disallow empty group full-ownership check
-- Commit: 89fafde923ea4450e60b6c25096c2401b04128d5
-
-Error 9: Include property value in net worth
-- Commit: 12d0447e450f6536536ddf8df456a96c5c7c4e51
-
-Error 10: Block purchase of already-owned property
-- Commit: 6ae1afd3adc9eefa3cc228d405d56788f3581aa7
-
-Final Status
-- Part 1.3 now has broad white-box branch/state/edge coverage.
-- Errors are documented using Error numbering.
-- All current white-box tests pass after sequential error-fix commits.
+6) Final Conclusion
+- The white-box report is now module-centric and ties tests directly to module behavior and discovered defects.
+- Defects were found in core money, property, and game-flow modules and fixed through sequential error-based commits.
+- Final state is stable with full current suite pass (162/162), while also documenting exactly which module had which issue.
