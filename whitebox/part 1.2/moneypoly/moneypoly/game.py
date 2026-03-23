@@ -313,8 +313,13 @@ class Game:
         value = card["value"]
 
         if action == "collect":
-            amount = self.bank.pay_out(value)
-            player.add_money(amount)
+            try:
+                amount = self.bank.pay_out(value)
+                player.add_money(amount)
+            except ValueError:
+                print(
+                    f"  Bank could not pay ${value} to {player.name} due to insufficient funds."
+                )
 
         elif action == "pay":
             player.deduct_money(value)
